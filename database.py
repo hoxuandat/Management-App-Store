@@ -87,23 +87,6 @@ def get_session():
     return Session()
 
 
-def add_sample_data():
-    """Thêm dữ liệu mẫu vào database."""
-    session = get_session()
-    
-    ### Them san pham mau
-    session.add_all([
-        Product(name = 'Bread', price = 8000, quantity = 5),
-        Product(name = 'Eggs', price = 18000, quantity = 2),
-        Product(name = 'Snacks', price = 5000, quantity = 3)
-        ])
-
-    ### Them khach hang mau
-    session.add_all([
-        Customer(name = 'Ho Xuan Dat', phone = '0123456789', address = 'Ha Dong'),
-        Customer(name = 'Nguyen Manh Cuong', phone = '9876543210', address = 'Dong Da'),
-        Customer(name = 'Vu Phuong Nhi', phone = '0147852369', address = 'Cau Giay')
-        ])
 
     session.commit()
     session.close()
