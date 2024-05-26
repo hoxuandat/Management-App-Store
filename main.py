@@ -1,4 +1,4 @@
-﻿import tkinter as tk
+import tkinter as tk
 from tkinter import ttk, messagebox
 import customtkinter
 import bcrypt
@@ -7,12 +7,6 @@ from database import get_session, Product, Customer, Order, OrderItem, Staff
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.orm import declarative_base
-import threading
-import numpy as np
-from collections import Counter
-import time
-import random
-import copy
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -24,9 +18,6 @@ engine = sa.create_engine('sqlite:///supermarket.db')
 
 ### Tao base class cho cac model####
 Base = declarative_base()
-
-# Khóa đồng bộ
-order_lock = threading.Lock()
 
 # Giỏ hàng (List)
 cart = {
@@ -248,14 +239,7 @@ class App(customtkinter.CTk):
         self.add_to_cart_product_button = tk.Button(right_frame, text='Thêm vào giỏ', font=FONT3, command=self.handle_add_to_cart_product)
         self.add_to_cart_product_button.pack(fill='x', padx=10, pady=5)
 
-         # Thêm dữ liệu mẫu vào treeview (không lưu vào database)
-        sample_data = [
-            (1, "Bánh mỳ", 10000, 10),
-            (2, "Thịt gà", 70000, 5),
-            
-        ]
-        for data in sample_data:
-            self.product_treeview.insert('', tk.END, values=data)
+
     def init_customer_tab(self, frame):
         frame = self.frames[1]
         self.customer_treeview = ttk.Treeview(frame, columns=('ID', 'Tên', 'Số điện thoại', 'Địa chỉ'), show='headings')
@@ -294,15 +278,7 @@ class App(customtkinter.CTk):
         self.delete_customer_button.pack(fill='x', padx=10, pady=5)
         self.add_to_cart_customer_button = tk.Button(right_frame, text='Thêm vào giỏ', font=FONT3, command=self.handle_add_to_cart_customer)
         self.add_to_cart_customer_button.pack(fill='x', padx=10, pady=5)
-                 # Thêm dữ liệu mẫu vào treeview (không lưu vào database)
-        sample_data = [
-            (1, "Hồ Xuân Đạt", "21020728", "Hà Đông"),
-            (2, "Nguyễn Mạnh Cường", "21021516", "Cầu Giấy"),
-            (3, "Vũ Phương Nhi", "21021536", "Đống Đa")
-            
-        ]
-        for data in sample_data:
-            self.customer_treeview.insert('', tk.END, values=data)
+
 
     def init_order_tab(self, frame):
         frame = self.frames[2]
@@ -744,76 +720,6 @@ class App(customtkinter.CTk):
             self.product_treeview.insert('', tk.END, values=(product.id, product.name, product.price, product.quantity))
         session.close()
 
-    def open_edit_order_window(self):
-        global cart
-        if cart['products'] and cart['customer']:
-            edit_window = tk.Toplevel(self)
-            edit_window.title("Chỉnh sửa đơn hàng")
-            edit_window.geometry("500x300")
-
-            # Tạo Treeview để hiển thị giỏ hàng
-            cart_treeview = ttk.Treeview(edit_window, columns=('ID', 'Sản phẩm', 'Số lượng', 'Giá'), show='headings')
-            for col in ('ID', 'Sản phẩm', 'Số lượng', 'Giá'):
-                cart_treeview.heading(col, text=col)
-                cart_treeview.column(col, width=80, minwidth=50)
-            cart_treeview.pack(side='top', fill='both', expand=True)
-
-            for i, item in enumerate(cart['products']):
-                product = item['product']
-                quantity = item['quantity']
-                cart_treeview.insert('', tk.END, values=(i+1, product.name, quantity, product.price * quantity))
-
-            # Hàm chỉnh sửa số lượng sản phẩm trong giỏ hàng
-            def handle_edit_cart_item():
-                global cart
-                selected_item = cart_treeview.selection()
-                if selected_item:
-                    item_id = int(cart_treeview.item(selected_item)['values'][0]) - 1  # Lấy id của item
-                    product = cart['products'][item_id]['product']
-
-                    # Tạo cửa sổ để nhập số lượng mới
-                    new_quantity_window = tk.Toplevel(edit_window)
-                    new_quantity_window.title("Nhập số lượng mới")
-
-                    new_quantity_label = tk.Label(new_quantity_window, text="Số lượng:")
-                    new_quantity_label.pack()
-                    new_quantity_entry = tk.Entry(new_quantity_window)
-                    new_quantity_entry.pack()
-
-                    def save_new_quantity():
-                        global cart
-                        try:
-                            new_quantity = int(new_quantity_entry.get())
-                            if new_quantity > 0:
-                                cart['products'][item_id]['quantity'] = new_quantity
-                                self.refresh_order_treeview()
-                                new_quantity_window.destroy()
-                            else:
-                                messagebox.showwarning("THÔNG BÁO", "Số lượng phải lớn hơn 0.")
-                        except ValueError:
-                            messagebox.showwarning("THÔNG BÁO", "Vui lòng nhập số nguyên.")
-
-                    save_button = tk.Button(new_quantity_window, text="Lưu", command=save_new_quantity)
-                    save_button.pack()
-
-            # Hàm xóa sản phẩm khỏi giỏ hàng
-            def handle_delete_cart_item():
-                global cart
-                selected_item = cart_treeview.selection()
-                if selected_item:
-                    item_id = int(cart_treeview.item(selected_item)['values'][0]) - 1
-                    del cart['products'][item_id]
-                    self.refresh_order_treeview()
-                    messagebox.showinfo("THÔNG BÁO", "Đã xóa sản phẩm khỏi giỏ hàng.")
-
-            # Buttons
-            edit_button = tk.Button(edit_window, text='Chỉnh sửa', font=FONT3, command=handle_edit_cart_item)
-            edit_button.pack(fill='x', padx=10, pady=5)
-            delete_button = tk.Button(edit_window, text='Xóa', font=FONT3, command=handle_delete_cart_item)
-            delete_button.pack(fill='x', padx=10, pady=5)
-
-        else:
-            messagebox.showinfo("THÔNG BÁO", "Giỏ hàng trống.")
     def refresh_customer_treeview(self):
         self.customer_treeview.delete(*self.customer_treeview.get_children())
         session = get_session()
@@ -885,8 +791,7 @@ class App(customtkinter.CTk):
                                 columns=['customer_id', 'address'])
 
                 
-       # Refresh dữ liệu lịch sử đơn hàng
-        self.refresh_order_history_treeview()
+
 
         session = get_session()
         orders = session.query(Order).all()
@@ -903,6 +808,8 @@ class App(customtkinter.CTk):
                                 columns=['product_id', 'product_name', 'price'])
 
 
+        # Refresh dữ liệu lịch sử đơn hàng
+        self.refresh_order_history_treeview()
  
          # Tính toán daily_revenue và average_daily_order_value
         df_orders['created_at'] = pd.to_datetime(df_orders['created_at'])
