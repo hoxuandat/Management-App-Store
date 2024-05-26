@@ -1,4 +1,4 @@
-#Ứng Dụng Quản Lý Cửa Hàng
+## Ứng Dụng Quản Lý Cửa Hàng
 
 ## Giới thiệu
 Đây là tài liệu hướng dẫn và mô tả về "Ứng Dụng Quản Lý Cửa Hàng". Ứng dụng này được xây dựng bằng Python và Tkinter và được phát triển nhằm mục đích quản lý sản phẩm, khách hàng và đơn hàng trong một cửa hàng. Dưới đây là các phần cụ thể về chức năng, cài đặt và hướng dẫn sử dụng.
@@ -20,18 +20,19 @@
 3. Tạo một tệp cơ sở dữ liệu SQLite có tên `supermarket.db` trong cùng thư mục với các tệp Python.
 4. Chạy tệp `main.py` để khởi động ứng dụng.
 
-##Cấu trúc thư mục
+## Cấu trúc thư mục
+```
 Management-App-Store/
---- main.py             # File chính của ứng dụng
---- database.py         # Kết nối cơ sở dữ liệu và định nghĩa các model
---- README.md           # Hướng dẫn sử dụng và mô tả dự án
-
+ main.py             # File chính của ứng dụng 
+ database.py         # Kết nối cơ sở dữ liệu và định nghĩa các model
+ README.md           # Hướng dẫn sử dụng và mô tả dự án 
+```
 ## Sử dụng
 1. Đăng nhập hoặc đăng ký tài khoản mới.
-2. Sử dụng các tab để quản lý sản phẩm, khách hàng và đơn hàng.
+2. Sử dụng các tab để quản lý sản phẩm, khách hàng và đơn hàng, theo dõi và phân tích dữ liệu.
 
 ## Ghi chú
 - Hãy chắc chắn rằng các thư viện được cài đặt đúng cách và cơ sở dữ liệu được tạo trước khi chạy ứng dụng.
 - Để xem mã nguồn và chi tiết triển khai, vui lòng tham khảo các tệp Python trong ứng dụng.
-- Ứng dụng này được phát triển với mục đích học tập và thử nghiệm, còn nhiều chức năng và hoạt động chưa được hoàn chỉnh và đầy đủ. Nếu muốn sử dụng trong môi trường thực tế thì cần cải tiến, sửa đổi và kiểm tra kỹ lưỡng hơn.
+- Ứng dụng này được phát triển với mục đích học tập và chỉ là 1 ứng dụng thử nghiệm đơn giản vì vậy còn nhiều chức năng và hoạt động chưa được hoàn chỉnh, còn nhiều thiếu sót . Nếu muốn sử dụng trong môi trường thực tế thì cần cải tiến, sửa đổi và kiểm tra kỹ lưỡng hơn.
 
